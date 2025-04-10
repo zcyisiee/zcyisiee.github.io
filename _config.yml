@@ -28,8 +28,8 @@ url: "https://zcyisiee.github.io"
 github:
   username: zcyisiee # 更改为你的 GitHub 用户名
 
-twitter:
-  username: zcyisiee # 更改为你的 Twitter 用户名
+# twitter:
+#   username: zcyisiee # 更改为你的 Twitter 用户名
 
 social:
   # 更改为你的全名。
@@ -38,7 +38,7 @@ social:
   email: xiaoxiaodeyehenkeai11@gmail.com # 更改为你的电子邮件地址
   links:
     # 第一个元素作为版权所有者的链接
-    - https://twitter.com/username # 更改为你的 Twitter 主页
+    # - https://twitter.com/username # 更改为你的 Twitter 主页
     - https://github.com/zcyisiee # 更改为你的 GitHub 主页
     # 取消下面的注释以添加更多社交链接
     # - https://www.facebook.com/username
