@@ -9,6 +9,15 @@
 
 /* append your custom style below */
 
+/* 预设颜色变量 - 直接从Lapis主题提取 */
+:root {
+  --text-color: #40464f; /* 文本颜色 */
+  --primary-color: #4870ac; /* 主色调 - 用于标题等 */
+  --bg-color: #ffffff; /* 背景色 */
+  --block-bg-color: #f6f8fa; /* 块背景色 */
+  --header-span-color: var(--primary-color); /* h2 跨度颜色 */
+}
+
 /* 自定义导言样式 */
 .prompt-introduction {
   position: relative;
@@ -28,6 +37,114 @@
   top: 15px;
   left: 15px;
   color: #1890ff;
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text-color: #e5e7eb;
+    --primary-color: #60a5fa; /* 深色模式下蓝色更亮一些 */
+    --bg-color: #1e293b;
+    --block-bg-color: #1e3a5f;
+    --header-span-color: var(--primary-color);
+  }
+}
+
+/* 标题基本样式 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'SourceHanSerifCN', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  padding: 0px;
+  color: var(--primary-color);
+  margin-top: 1.2em;
+  margin-bottom: 0.6em;
+  line-height: 1.35;
+}
+
+/* h1标题 - 居中显示 */
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  padding-top: 0.9rem;
+  margin-bottom: 2.3rem;
+  font-weight: 700;
+}
+
+/* h2标题 - 带背景色的标签式设计 */
+h2 {
+  padding: 1px 12.5px;
+  border-radius: 4px;
+  display: inline-block;
+  font-size: 1.5rem;
+  margin: 0.3em 0;
+  background-color: var(--header-span-color);
+  color: var(--bg-color) !important;
+  font-weight: 600;
+}
+
+/* h2内部的元素也继承颜色 */
+h2 code,
+h2 a,
+h2 strong,
+h2 script {
+  color: var(--bg-color) !important;
+}
+
+/* h2中的链接样式 */
+h2 a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.2px;
+  border-bottom: none !important;
+  color: var(--bg-color) !important;
+}
+
+/* h3标题 */
+h3 {
+  font-size: 1.4rem;
+  margin: 1em 0 0.6em;
+  font-weight: 600;
+}
+
+/* h4标题 */
+h4 {
+  font-size: 1.2rem;
+  margin: 0.8em 0 0.5em;
+  font-weight: normal;
+}
+
+/* h5标题 */
+h5 {
+  font-size: 1.1rem;
+  margin: 0.6em 0 0.4em;
+  font-weight: normal;
+}
+
+/* h6标题 */
+h6 {
+  font-size: 1.1rem;
+  margin: 0.4em 0 0.3em;
+  font-weight: normal;
+}
+
+/* 引用块中标题的样式 */
+blockquote h1,
+blockquote h2,
+blockquote h3,
+blockquote h4,
+blockquote h5,
+blockquote h6 {
+  margin-top: 0.6em;
+}
+
+/* 补充：h2在引用块内的特殊处理 */
+blockquote h2 {
+  background-color: rgba(72, 112, 172, 0.8); /* 稍微透明一点 */
 }
 
 /* 自定义导言框样式 */
