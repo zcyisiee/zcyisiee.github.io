@@ -1,31 +1,31 @@
----
----
+// ---
+// ---
 
-@use 'main
-{%- if jekyll.environment == ' production ' -%}
-  .bundle
-{%- endif -%}
-';
+// @use 'main
+// {%- if jekyll.environment == ' production ' -%}
+//   .bundle
+// {%- endif -%}
+// ';
 
-/* append your custom style below */
+// /* append your custom style below */
 
-/* 自定义导言样式 */
-.prompt-introduction {
-  position: relative;
-  background-color: #e6f7ff; /* 浅蓝色背景 */
-  border-left: 4px solid #1890ff; /* 左边框蓝色 */
-  padding: 15px 15px 15px 40px; /* 左侧留出空间放图标 */
-  margin-bottom: 20px;
-  border-radius: 4px;
-}
+// /* 自定义导言样式 */
+// .prompt-introduction {
+//   position: relative;
+//   background-color: #e6f7ff; /* 浅蓝色背景 */
+//   border-left: 4px solid #1890ff; /* 左边框蓝色 */
+//   padding: 15px 15px 15px 40px; /* 左侧留出空间放图标 */
+//   margin-bottom: 20px;
+//   border-radius: 4px;
+// }
 
-/* 添加导言图标 */
-.prompt-introduction:before {
-  content: '\f075'; /* 使用Font Awesome的评论图标，您可以更换为其他图标代码 */
-  font-family: 'Font Awesome 5 Free';
-  font-weight: 900;
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  color: #1890ff;
-}
+// /* 添加导言图标 */
+// .prompt-introduction:before {
+//   content: '\f075'; /* 使用Font Awesome的评论图标，您可以更换为其他图标代码 */
+//   font-family: 'Font Awesome 5 Free';
+//   font-weight: 900;
+//   position: absolute;
+//   top: 15px;
+//   left: 15px;
+//   color: #1890ff;
+// }
