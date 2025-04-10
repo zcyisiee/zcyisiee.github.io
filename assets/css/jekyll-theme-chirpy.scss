@@ -29,3 +29,57 @@
   left: 15px;
   color: #1890ff;
 }
+
+/* 自定义导言框样式 */
+.intro-box {
+  background-color: #e6f3ff; /* 浅蓝色背景 */
+  border-left: 4px solid #60a5fa; /* 左侧边框 */
+  border-radius: 4px; /* 圆角 */
+  padding: 15px 20px; /* 内边距 */
+  margin: 20px 0; /* 上下外边距 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* 轻微阴影，增加扁平化效果 */
+  transition: all 0.3s ease; /* 平滑过渡效果 */
+}
+
+.intro-box:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 悬停时阴影加深 */
+}
+
+.intro-box-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #3b82f6; /* 标题蓝色 */
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.intro-box-title::before {
+  content: '📌'; /* 可以替换为其他图标 */
+  margin-right: 8px;
+}
+
+.intro-box-content {
+  color: #4b5563; /* 内容文字颜色 */
+  line-height: 1.6;
+}
+
+/* 确保数学公式正确渲染 */
+.intro-box .math {
+  overflow-x: auto; /* 处理长公式 */
+  padding: 3px 0;
+}
+
+/* 暗模式适配 */
+[data-theme='dark'] .intro-box {
+  background-color: #1e3a5f; /* 暗模式下的浅蓝色背景 */
+  border-left: 4px solid #3b82f6;
+}
+
+[data-theme='dark'] .intro-box-title {
+  color: #60a5fa; /* 暗模式下标题颜色 */
+}
+
+[data-theme='dark'] .intro-box-content {
+  color: #e5e7eb; /* 暗模式下内容文字颜色 */
+}
