@@ -4,6 +4,7 @@ date: 2025-04-11
 categories: [技术, Markdown]
 tags: [Markdown, Typora]
 description: 介绍了通过Typora+Picgo的方式自动将图片上传到GitHub上的方法
+pin: true
 ---
 
 >Typora可以方便的将图片拖入md文件，并在指定的文件夹中储存图片，这个自动化的过程非常舒适。但是，
