@@ -14,7 +14,7 @@ pin: true
 
 ## 准备工具
 
-PicGo提供了两种工具，一种是图形化窗口[PicGo](https://github.com/Molunerfinn/PicGo){:target="_blank"}，另一种是命令行窗口[PicGo-Core](https://picgo.github.io/PicGo-Core-Doc/zh/guide/){:target="_blank"}。我推荐Picgo-Core，因为它的上传过程是无感的，贼舒服；图形化窗口Picgo每次上传都要跳转到Picgo的主界面，咋改设置都不行🤷。下图
+PicGo提供了两种工具，一种是图形化窗口[PicGo](https://github.com/Molunerfinn/PicGo){:target="_blank"}，另一种是命令行窗口[PicGo-Core](https://picgo.github.io/PicGo-Core-Doc/zh/guide/){:target="_blank"}。我推荐Picgo-Core，因为它的上传过程是无感的，贼舒服；图形化窗口Picgo每次上传都要跳转到Picgo的主界面，咋改设置都不行🤷。下图展示了配置成功后的效果，很爽。
 
 ![image-20250411231645589](https://raw.githubusercontent.com/zcyisiee/blog-images/main/Typora自动上传图片/image-20250411231645589.png){: .w-75}
 _完成配置后的自动上传demo_
