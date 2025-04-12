@@ -1,7 +1,7 @@
 ---
 title: Mitmproxy与通信过程
 date: 2025-03-28
-categories: [编程, 网络安全]
+categories: [技术, 网络安全]
 tags: [网络安全]
 description: 抢场程序相关的工具，包括mitmproxy、js逆向、通信原理
 ---

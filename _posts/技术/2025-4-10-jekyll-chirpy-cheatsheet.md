@@ -1,8 +1,8 @@
 ---
 title: Kramdown格式化速查表
 date: 2025-04-10
-categories: [编程, 前端]
-tags: [前端]
+categories: [技术, Jekyll]
+tags: [Jekyll]
 description: Kramdown格式化速查表，适用于Jekyll
 ---
 # Jekyll Chirpy主题 - Kramdown格式化速查表
