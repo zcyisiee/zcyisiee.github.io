@@ -26,7 +26,7 @@ package-lock.json
 _sass/vendors
 assets/js/dist
 
-.DS_Store
+*.DS_Store
 
 # 防止token暴露
 PicGo-Core_config.json
