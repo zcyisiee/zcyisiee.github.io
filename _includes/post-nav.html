@@ -14,7 +14,7 @@
   {% if page.series %}
     {% assign series_name = page.series %}
     {% comment %} --- 查找同系列所有文章，并排序 (可按 date 或 series_order) --- {% endcomment %}
-    {% assign series_posts = site.posts | where: 'series', series_name | sort: 'date' %}
+    {% assign series_posts = site.posts | where: 'series', series_name | sort: 'series_order' %}
     {% comment %}
       如果你想用 series_order排序，取消注释下一行，并注释掉上一行 {% assign series_posts = site.posts |
       where: "series", series_name | sort: "series_order" %}
