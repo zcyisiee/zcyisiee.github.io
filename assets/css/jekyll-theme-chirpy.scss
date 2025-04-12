@@ -1,0 +1,71 @@
+---
+---
+
+@use 'main
+{%- if jekyll.environment == ' production ' -%}
+  .bundle
+{%- endif -%}
+';
+
+/* append your custom style below */
+
+/* 预设颜色变量 - 直接从Lapis主题提取 */
+:root {
+  --text-color: #40464f; /* 文本颜色 */
+  --primary-color: #4870ac; /* 主色调 - 用于标题等 */
+  --bg-color: #ffffff; /* 背景色 */
+  --block-bg-color: #f6f8fa; /* 块背景色 */
+  --header-span-color: var(--primary-color); /* h2 跨度颜色 */
+}
+
+/*******************************************************/
+/* == 自定义导言格式 == */
+/*******************************************************/
+.prompt-introduction {
+  position: relative;
+  background-color: #e6f7ff; /* 浅蓝色背景 */
+  border-left: 4px solid #1890ff; /* 左边框蓝色 */
+  padding: 15px 15px 15px 40px; /* 左侧留出空间放图标 */
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+/* 添加导言图标 */
+.prompt-introduction:before {
+  content: '\f075'; /* 使用Font Awesome的评论图标，您可以更换为其他图标代码 */
+  font-family: 'Font Awesome 5 Free';
+  font-weight: 900;
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  color: #1890ff;
+}
+
+/* Custom Introduction Blockquote Style (Blue Theme) */
+blockquote.intro {
+  margin: 1.5em 0; /* 上下外边距 */
+  border-left: 5px solid #1274d6; /* 左侧深蓝色边框 */
+  padding: 1em 1em 1em 1.5em; /* 内边距 (上 右 下 左) */
+  background-color: #eaf6ff; /* 浅蓝色背景 */
+  border-radius: 4px; /* 可选：轻微圆角 */
+  color: #555; /* 文本颜色 (保持深灰色，与浅蓝背景对比良好) */
+}
+
+blockquote.intro::before {
+  content: '\f05a  Introduction'; /* Font Awesome 图标代码 + 文本 */
+  display: block; /* 使其成为块级元素，占据一行 */
+  font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Solid'; /* 检查并确认 Font Awesome 字体名称 */
+  font-weight: 900; /* 使用 Solid 样式的图标需要此字重 */
+  color: #1274d6; /* 图标和标题文本颜色 (深蓝色) */
+  font-size: 1.1em; /* 字体稍大 */
+  margin-bottom: 0.8em; /* 标题和下方内容之间的间距 */
+}
+
+/* 可选：移除 blockquote 内第一个/最后一个段落的默认边距 */
+blockquote.intro p:first-child {
+  margin-top: 0;
+}
+
+blockquote.intro p:last-child {
+  margin-bottom: 0;
+}
