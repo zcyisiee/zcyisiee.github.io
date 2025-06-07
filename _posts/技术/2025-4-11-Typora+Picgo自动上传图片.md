@@ -31,7 +31,7 @@ _完成配置后的自动上传demo_
 
 ![image-20250411230506542](https://raw.githubusercontent.com/zcyisiee/blog-images/main/Typora自动上传图片/image-20250411230506542.png){: .w-75}
 
-进入后找到左侧导航栏最下方的[Developer Settings](https://github.com/settings/tokens)]{:target="_blank"}，为自己的仓库设置classic的token，记得开启repo的权限，这样稍后PicGo-Core才能通过这个token对仓库进行写入。
+进入后找到左侧导航栏最下方的[Developer Settings](https://github.com/settings/tokens){:target="_blank"}，为自己的仓库设置classic的token，记得开启repo的权限，这样稍后PicGo-Core才能通过这个token对仓库进行写入。
 
 ![image-20250411231614803](https://raw.githubusercontent.com/zcyisiee/blog-images/main/Typora自动上传图片/image-20250411231614803.png){: .w-75}
 
@@ -47,7 +47,7 @@ PicGo的配置很简单，在图形化界面中完成配置即可。
 
 ### PicGo-Core
 
-PicGo-Core的配置稍微难一点，需要找到对应的config.json文件夹。打开后完成编辑就好啦！
+PicGo-Core的配置稍微难一点，需要找到对应的config.json文件夹，以Mac为例，这个路径一般在`~/Library/Application Support/picgo/data.json`。打开后完成编辑就好啦！
 
 ![image-20250411233254703](https://raw.githubusercontent.com/zcyisiee/blog-images/main/Typora自动上传图片/image-20250411233254703.png){: .w-75}
 
