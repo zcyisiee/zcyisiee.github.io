@@ -69,3 +69,10 @@ blockquote.intro p:first-child {
 blockquote.intro p:last-child {
   margin-bottom: 0;
 }
+
+/* ======= 你的定制从这里开始 ======= */
+/* 正文 & 页面正文首行缩进 2 个字 */
+.post-content > p,
+.page-content > p {
+  text-indent: 2em;
+}
