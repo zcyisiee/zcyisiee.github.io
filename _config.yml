@@ -147,8 +147,6 @@ pwa:
 
 paginate: 10
 
-paginate_path: "/blog/page:num/"
-
 # 你网站的基础 URL
 baseurl: ""
 
