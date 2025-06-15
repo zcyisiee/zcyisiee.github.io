@@ -31,3 +31,6 @@ assets/js/dist
 # 防止token暴露
 PicGo-Core_config.json
 _posts/data.json
+
+# 绘图的
+*.drawio
