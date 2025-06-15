@@ -9,6 +9,9 @@ window.MathJax = {
       ['$$', '$$'],
       ['\\[', '\\]'],
     ],
+    macros: {
+      dbar: ['\\mathrm{đ}', 0],
+    },
     processEscapes: true,
     processEnvironments: true,
     processRefs: true,
