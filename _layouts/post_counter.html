@@ -9,11 +9,58 @@ tail_includes:
 script_includes:
   - comment
 ---
+<!-- 关键改进：将JS放在HEAD中，确保在内容渲染前执行 -->
+<script>
+  // 页面加载前立即执行
+  document.addEventListener('DOMContentLoaded', function () {
+    // 立即隐藏所有可能是图片标题的em标签
+    const style = document.createElement('style');
+    style.textContent = `
+      .content em:not([data-processed]) {
+        opacity: 0 !important;
+        transition: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    // 立即处理图片标题
+    processImageTitles();
+  });
+
+  function processImageTitles() {
+    let figureCounter = 0;
+    const emTags = document.querySelectorAll('.content em:not([data-processed])');
+
+    emTags.forEach(function (em) {
+      const text = em.textContent.trim();
+      const figureMatch = text.match(/^图\d*\.?\s*(.+)$/);
+
+      if (figureMatch) {
+        figureCounter++;
+        const title = figureMatch[1];
+
+        // 创建新的图注容器
+        const caption = document.createElement('div');
+        caption.className = 'auto-figure-caption';
+        caption.textContent = `图 ${figureCounter}. ${title}`;
+
+        // 替换原来的em标签
+        em.parentNode.replaceChild(caption, em);
+      } else {
+        // 不是图片标题的em标签，标记为已处理并显示
+        em.setAttribute('data-processed', 'true');
+        em.style.opacity = '1';
+        em.style.visibility = 'visible';
+      }
+    });
+  }
+</script>
+
 <!-- 添加自定义样式 -->
 <style>
   /* 段落首行缩进 */
   .content p {
-    text-indent: 2em; /* 首行缩进2个字符 */
+    text-indent: 2em;
     margin-bottom: 1em;
     line-height: 1.6;
   }
@@ -85,18 +132,6 @@ script_includes:
     border-top: 1px solid #e9ecef;
     border-bottom: 1px solid #e9ecef;
     background-color: #f8f9fa;
-    opacity: 0;
-    transition: opacity 0.2s ease-in-out;
-  }
-
-  .content .auto-figure-caption.show {
-    opacity: 1;
-  }
-
-  /* 预隐藏需要自动编号的图片标题 */
-  .content em[data-figure-title] {
-    opacity: 0;
-    transition: opacity 0.1s ease-in-out;
   }
 
   /* TOC导航栏编号样式 */
@@ -191,7 +226,7 @@ script_includes:
 
           {{ site.data.locales[lang].post.written_by }}
 
-          <em>
+          <em data-processed="true">
             {% if authors %}
               {% for author in authors %}
                 {% if site.data.authors[author].url -%}
@@ -199,7 +234,7 @@ script_includes:
                 {%- else -%}
                   {{ site.data.authors[author].name }}
                 {%- endif %}
-                {% unless forloop.last %}{{ '</em>, <em>' }}{% endunless %}
+                {% unless forloop.last %}{{ '</em>, <em data-processed="true">' }}{% endunless %}
               {% endfor %}
             {% else %}
               <a href="{{ site.social.links[0] }}">{{ site.social.name }}</a>
@@ -211,7 +246,7 @@ script_includes:
           <!-- pageviews -->
           {% if site.pageviews.provider and site.analytics[site.pageviews.provider].id %}
             <span>
-              <em id="pageviews">
+              <em id="pageviews" data-processed="true">
                 <i class="fas fa-spinner fa-spin small"></i>
               </em>
               {{ site.data.locales[lang].post.pageview_measure }}
@@ -306,67 +341,22 @@ script_includes:
 </article>
 
 <script>
-  // 图片自动编号和TOC编号功能
+  // TOC编号处理
   document.addEventListener('DOMContentLoaded', function () {
-    // 先标记需要处理的图片标题
-    function markFigureTitles() {
-      const emTags = document.querySelectorAll('.content em');
-      emTags.forEach(function (em) {
-        const text = em.textContent.trim();
-        // 匹配 "图X. 标题" 或 "图X 标题" 格式
-        const figureMatch = text.match(/^图\d*\.?\s*(.+)$/);
-        if (figureMatch) {
-          em.setAttribute('data-figure-title', figureMatch[1]);
-        }
-      });
-    }
-
-    // 处理图片编号 - 改进版本
-    function addImageNumbers() {
-      let figureCounter = 0;
-
-      // 查找所有标记的em标签
-      const figureTitles = document.querySelectorAll('.content em[data-figure-title]');
-
-      figureTitles.forEach(function (em) {
-        figureCounter++;
-        const title = em.getAttribute('data-figure-title');
-
-        // 创建新的图注容器
-        const caption = document.createElement('div');
-        caption.className = 'auto-figure-caption';
-        caption.textContent = `图 ${figureCounter}. ${title}`;
-
-        // 替换原来的em标签
-        em.parentNode.replaceChild(caption, em);
-
-        // 使用requestAnimationFrame确保DOM更新后再显示
-        requestAnimationFrame(() => {
-          caption.classList.add('show');
-        });
-      });
-    }
-
-    // 处理TOC编号
     function addTocNumbers() {
-      // 等待TOC加载完成
       setTimeout(function () {
-        // 查找标题编号
         const headings = document.querySelectorAll('.content h2, .content h3, .content h4, .content h5');
         const numbering = {};
 
         headings.forEach(function (heading) {
           const level = parseInt(heading.tagName.charAt(1));
 
-          // 重置更深层级的计数器
           for (let i = level + 1; i <= 5; i++) {
             numbering[i] = 0;
           }
 
-          // 增加当前层级计数器
           numbering[level] = (numbering[level] || 0) + 1;
 
-          // 生成编号
           let number = '';
           for (let i = 2; i <= level; i++) {
             if (numbering[i]) {
@@ -374,11 +364,9 @@ script_includes:
             }
           }
 
-          // 存储编号到heading的data属性
           heading.setAttribute('data-heading-number', number);
         });
 
-        // 更新TOC链接
         const tocLinks = document.querySelectorAll('#toc-wrapper .toc-link, #toc-popup-content a');
         tocLinks.forEach(function (link) {
           const href = link.getAttribute('href');
@@ -389,13 +377,11 @@ script_includes:
             if (targetHeading && targetHeading.hasAttribute('data-heading-number')) {
               const number = targetHeading.getAttribute('data-heading-number');
 
-              // 移除现有的编号
               const existingNumber = link.querySelector('.toc-number');
               if (existingNumber) {
                 existingNumber.remove();
               }
 
-              // 添加新编号
               const numberSpan = document.createElement('span');
               numberSpan.className = 'toc-number';
               numberSpan.textContent = number + '. ';
@@ -407,15 +393,12 @@ script_includes:
             }
           }
         });
-      }, 500); // 延迟执行，确保TOC已生成
+      }, 500);
     }
 
-    // 执行编号功能
-    markFigureTitles(); // 先标记
-    addImageNumbers(); // 再处理
     addTocNumbers();
 
-    // 监听TOC变化（如果有动态加载）
+    // 监听TOC变化
     const observer = new MutationObserver(function (mutations) {
       let tocChanged = false;
       mutations.forEach(function (mutation) {
@@ -428,7 +411,6 @@ script_includes:
       }
     });
 
-    // 开始观察TOC容器
     const tocWrapper = document.getElementById('toc-wrapper');
     const tocPopup = document.getElementById('toc-popup-content');
 
