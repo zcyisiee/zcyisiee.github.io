@@ -1,0 +1,307 @@
+// 计数器初始化（放在文档开始处，比如 body 或 .main-content）
+.post-content,
+.main-content,
+body {
+  // 方案一：独立编号
+  counter-reset: theorem-counter definition-counter lemma-counter
+    example-counter;
+
+  // 方案二：全局编号（所有定理类环境统一编号）
+  // counter-reset: global-theorem-counter;
+}
+
+// 定理和定义框的基础样式
+.theorem-box,
+.definition-box,
+.lemma-box,
+.proof-box,
+.example-box,
+.corollary-box {
+  position: relative;
+  margin: 1.5rem 0;
+  padding: 1rem 1.2rem 1rem 1.2rem;
+  border-radius: 8px;
+  border-left: 4px solid;
+  background: var(--bg-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  // 左上角标题样式
+  .box-title {
+    position: absolute;
+    top: -0.6rem;
+    left: 1rem;
+    padding: 0.2rem 0.8rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    background: inherit;
+    border: 2px solid;
+  }
+
+  // 内容区域
+  .box-content {
+    margin-top: 0.8rem;
+    line-height: 1.6;
+
+    p {
+      margin: 0.5rem 0;
+
+      &:first-child {
+        margin-top: 0;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    // 数学公式样式优化
+    .MathJax,
+    .katex {
+      margin: 0.3rem 0;
+    }
+  }
+}
+
+// 自动编号样式 - 方案一：独立编号
+.theorem-box {
+  counter-increment: theorem-counter;
+  border-left-color: #3498db;
+  background: rgba(52, 152, 219, 0.05);
+
+  .box-title {
+    color: #2980b9;
+    border-color: #3498db;
+    background: rgba(52, 152, 219, 0.1);
+
+    &::before {
+      content: '定理 ' counter(theorem-counter);
+    }
+
+    &.named::before {
+      content: '定理 ' counter(theorem-counter) '：';
+    }
+  }
+}
+
+.definition-box {
+  counter-increment: definition-counter;
+  border-left-color: #27ae60;
+  background: rgba(39, 174, 96, 0.05);
+
+  .box-title {
+    color: #229954;
+    border-color: #27ae60;
+    background: rgba(39, 174, 96, 0.1);
+
+    &::before {
+      content: '定义 ' counter(definition-counter);
+    }
+
+    &.named::before {
+      content: '定义 ' counter(definition-counter) '：';
+    }
+  }
+}
+
+.lemma-box {
+  counter-increment: lemma-counter;
+  border-left-color: #9b59b6;
+  background: rgba(155, 89, 182, 0.05);
+
+  .box-title {
+    color: #8e44ad;
+    border-color: #9b59b6;
+    background: rgba(155, 89, 182, 0.1);
+
+    &::before {
+      content: '引理 ' counter(lemma-counter);
+    }
+
+    &.named::before {
+      content: '引理 ' counter(lemma-counter) '：';
+    }
+  }
+}
+
+.example-box {
+  counter-increment: example-counter;
+  border-left-color: #f39c12;
+  background: rgba(243, 156, 18, 0.05);
+
+  .box-title {
+    color: #d68910;
+    border-color: #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+
+    &::before {
+      content: '例题 ' counter(example-counter);
+    }
+
+    &.named::before {
+      content: '例题 ' counter(example-counter) '：';
+    }
+  }
+}
+
+.corollary-box {
+  counter-increment: theorem-counter; // 推论与定理共用计数器
+  border-left-color: #e74c3c;
+  background: rgba(231, 76, 60, 0.05);
+
+  .box-title {
+    color: #c0392b;
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+
+    &::before {
+      content: '推论 ' counter(theorem-counter);
+    }
+
+    &.named::before {
+      content: '推论 ' counter(theorem-counter) '：';
+    }
+  }
+}
+
+// 证明框（不编号）
+.proof-box {
+  border-left-color: #7f8c8d;
+  background: rgba(127, 140, 141, 0.05);
+
+  .box-title {
+    color: #5d6d6e;
+    border-color: #7f8c8d;
+    background: rgba(127, 140, 141, 0.1);
+
+    &::before {
+      content: '证明';
+    }
+  }
+}
+
+/* 
+// 方案二：全局编号（取消上面方案一的注释，使用下面的代码）
+.theorem-box, .lemma-box, .corollary-box {
+  counter-increment: global-theorem-counter;
+}
+
+.theorem-box .box-title::before {
+  content: "定理 " counter(global-theorem-counter);
+}
+
+.theorem-box .box-title.named::before {
+  content: "定理 " counter(global-theorem-counter) "：";
+}
+
+.lemma-box .box-title::before {
+  content: "引理 " counter(global-theorem-counter);
+}
+
+.lemma-box .box-title.named::before {
+  content: "引理 " counter(global-theorem-counter) "：";
+}
+
+.corollary-box .box-title::before {
+  content: "推论 " counter(global-theorem-counter);
+}
+
+.corollary-box .box-title.named::before {
+  content: "推论 " counter(global-theorem-counter) "：";
+}
+
+.definition-box {
+  counter-increment: definition-counter;
+}
+
+.definition-box .box-title::before {
+  content: "定义 " counter(definition-counter);
+}
+
+.definition-box .box-title.named::before {
+  content: "定义 " counter(definition-counter) "：";
+}
+*/
+
+// 暗色主题适配
+[data-theme='dark'] {
+  .theorem-box,
+  .definition-box,
+  .lemma-box,
+  .proof-box,
+  .example-box,
+  .corollary-box {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
+
+  .theorem-box {
+    background: rgba(52, 152, 219, 0.08);
+
+    .box-title {
+      background: rgba(52, 152, 219, 0.15);
+    }
+  }
+
+  .definition-box {
+    background: rgba(39, 174, 96, 0.08);
+
+    .box-title {
+      background: rgba(39, 174, 96, 0.15);
+    }
+  }
+
+  .lemma-box {
+    background: rgba(155, 89, 182, 0.08);
+
+    .box-title {
+      background: rgba(155, 89, 182, 0.15);
+    }
+  }
+
+  .example-box {
+    background: rgba(243, 156, 18, 0.08);
+
+    .box-title {
+      background: rgba(243, 156, 18, 0.15);
+    }
+  }
+
+  .corollary-box {
+    background: rgba(231, 76, 60, 0.08);
+
+    .box-title {
+      background: rgba(231, 76, 60, 0.15);
+    }
+  }
+
+  .proof-box {
+    background: rgba(127, 140, 141, 0.08);
+
+    .box-title {
+      background: rgba(127, 140, 141, 0.15);
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .theorem-box,
+  .definition-box,
+  .lemma-box,
+  .proof-box,
+  .example-box,
+  .corollary-box {
+    margin: 1rem 0;
+    padding: 0.8rem 1rem;
+
+    .box-title {
+      font-size: 0.85rem;
+      padding: 0.15rem 0.6rem;
+      left: 0.8rem;
+    }
+
+    .box-content {
+      margin-top: 0.6rem;
+    }
+  }
+}
