@@ -22,6 +22,8 @@ package-lock.json
 !.vscode/extensions.json
 !.vscode/tasks.json
 .trae/
+dev/*
+
 # Misc
 _sass/vendors
 assets/js/dist
