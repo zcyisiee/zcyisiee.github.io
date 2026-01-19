@@ -1,81 +1,83 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Manager | zcyisiee</title>
-  <style>
-    /* Base styles */
-    :root {
-      --primary-color: #2563eb;
-      --bg-color: #fafafa;
-      --sidebar-bg: #ffffff;
-      --border-color: #e5e7eb;
-      --text-color: #1f2937;
-      --text-muted: #6b7280;
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Content Manager | zcyisiee</title>
+    <style>
+      /* Base styles */
+      :root {
+        --primary-color: #2563eb;
+        --bg-color: #fafafa;
+        --sidebar-bg: #ffffff;
+        --border-color: #e5e7eb;
+        --text-color: #1f2937;
+        --text-muted: #6b7280;
+      }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      height: 100vh;
-      overflow: hidden; /* CMS handles scrolling */
-    }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: var(--bg-color);
+        color: var(--text-color);
+        margin: 0;
+        height: 100vh;
+        overflow: hidden; /* CMS handles scrolling */
+      }
 
-    /* 
+      /* 
       Custom Grid Layout 
       Applied when .custom-split-view class is present on the container
     */
-    .custom-split-view {
-      display: grid !important;
-      grid-template-columns: 320px 1fr !important;
-      gap: 24px !important;
-      align-items: start !important;
-      max-width: 100% !important;
-      margin: 0 auto !important;
-      padding: 24px !important;
-      height: 100vh; /* Use viewport height */
-      box-sizing: border-box;
-      overflow-y: auto;
-    }
+      .custom-split-view {
+        display: grid !important;
+        grid-template-columns: 320px 1fr !important;
+        gap: 24px !important;
+        align-items: start !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 24px !important;
+        height: 100vh; /* Use viewport height */
+        box-sizing: border-box;
+        overflow-y: auto;
+      }
 
-    /* Metadata Column (Left) - Target all direct children except body */
-    .custom-split-view > div:not([data-field-name="body"]) {
-      grid-column: 1 !important;
-      width: 100%;
-    }
-    
-    /* Body Column (Right) */
-    .custom-split-view > [data-field-name="body"] {
-      grid-column: 2 !important;
-      grid-row: 1 / span 50 !important; /* Span many rows to sit alongside all metadata */
-      height: 100%;
-      min-height: 80vh;
-    }
+      /* Metadata Column (Left) - Target all direct children except body */
+      .custom-split-view > div:not([data-field-name="body"]) {
+        grid-column: 1 !important;
+        width: 100%;
+      }
 
-    /* Style the body editor wrapper for better visibility */
-    .custom-split-view > [data-field-name="body"] > div {
-       height: 100%;
-       min-height: 80vh;
-       background: #fff;
-       border-radius: 8px;
-       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
+      /* Body Column (Right) */
+      .custom-split-view > [data-field-name="body"] {
+        grid-column: 2 !important;
+        grid-row: 1 / span 50 !important; /* Span many rows to sit alongside all metadata */
+        height: 100%;
+        min-height: 80vh;
+      }
 
-    /* Make metadata fields look compact and card-like */
-    .custom-split-view > div:not([data-field-name="body"]) {
-      background: var(--sidebar-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-    
-    /* Enhance Label Typography */
-    .custom-split-view label {
+      /* Style the body editor wrapper for better visibility */
+      .custom-split-view > [data-field-name="body"] > div {
+        height: 100%;
+        min-height: 80vh;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Make metadata fields look compact and card-like */
+      .custom-split-view > div:not([data-field-name="body"]) {
+        background: var(--sidebar-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Enhance Label Typography */
+      .custom-split-view label {
         font-weight: 600;
         font-size: 0.85rem;
         color: var(--text-muted);
@@ -83,59 +85,62 @@
         letter-spacing: 0.05em;
         margin-bottom: 8px;
         display: block;
-    }
+      }
 
-    /* Input Fields Styling */
-    .custom-split-view input[type="text"],
-    .custom-split-view input[type="datetime-local"],
-    .custom-split-view select {
+      /* Input Fields Styling */
+      .custom-split-view input[type="text"],
+      .custom-split-view input[type="datetime-local"],
+      .custom-split-view select {
         width: 100%;
         padding: 8px 12px;
         border: 1px solid var(--border-color);
         border-radius: 6px;
         font-size: 0.95rem;
         box-sizing: border-box;
-    }
-    
-    /* Ensure CodeMirror (Markdown Editor) expands */
-    .cm-editor {
-        min-height: 80vh !important;
-    }
-  </style>
-</head>
-<body>
-  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
-  
-  <script>
-    /**
-     * Sveltia CMS Customization Script
-     * 1. Layout: Enforces Split View (Metadata Left, Body Right)
-     * 2. Integration: PicGo Auto-Upload on Paste
-     */
+      }
 
-    (function() {
+      /* Ensure CodeMirror (Markdown Editor) expands */
+      .cm-editor {
+        min-height: 80vh !important;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+
+    <script>
+      /**
+       * Sveltia CMS Customization Script
+       * 1. Layout: Enforces Split View (Metadata Left, Body Right)
+       * 2. Integration: PicGo Auto-Upload on Paste
+       */
+
+      (function () {
         // --- Configuration ---
-        const PICGO_API = 'http://127.0.0.1:36677/upload';
-        
+        const PICGO_API = "http://127.0.0.1:36677/upload";
+
         // --- Layout Customization ---
         function applyCustomLayout() {
-            // Find the container that holds the fields. 
-            // We look for the 'body' field wrapper as the anchor.
-            const bodyField = document.querySelector('[data-field-name="body"]');
-            if (bodyField) {
-                const container = bodyField.parentElement;
-                // Add class if not present
-                if (container && !container.classList.contains('custom-split-view')) {
-                    container.classList.add('custom-split-view');
-                    console.log('Sveltia CMS: Custom split view applied.');
-                }
+          // Find the container that holds the fields.
+          // We look for the 'body' field wrapper as the anchor.
+          const bodyField = document.querySelector('[data-field-name="body"]');
+          if (bodyField) {
+            const container = bodyField.parentElement;
+            // Add class if not present
+            if (
+              container &&
+              !container.classList.contains("custom-split-view")
+            ) {
+              container.classList.add("custom-split-view");
+              console.log("Sveltia CMS: Custom split view applied.");
             }
+          }
         }
 
         // Observer to apply layout when DOM changes (navigation, loading)
         const observer = new MutationObserver((mutations) => {
-            // Debounce or check efficiently
-            applyCustomLayout();
+          // Debounce or check efficiently
+          applyCustomLayout();
         });
 
         // Start observing once body is available
@@ -143,123 +148,156 @@
 
         // --- PicGo Integration ---
         async function uploadToPicGo(file) {
-            const formData = new FormData();
-            formData.append('list', file);
+          const formData = new FormData();
+          formData.append("list", file);
 
-            try {
-                // Note: This will fail on HTTPS unless user allows mixed content or runs locally
-                const response = await fetch(PICGO_API, {
-                    method: 'POST',
-                    body: formData
-                });
+          try {
+            // Note: This will fail on HTTPS unless user allows mixed content or runs locally
+            const response = await fetch(PICGO_API, {
+              method: "POST",
+              body: formData,
+            });
 
-                if (!response.ok) {
-                    throw new Error(`PicGo Server Error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                if (data.success && data.result && data.result.length > 0) {
-                    return data.result[0]; // Returns the URL
-                } else {
-                    throw new Error('PicGo response invalid');
-                }
-            } catch (error) {
-                console.error('PicGo Upload Failed:', error);
-                alert(`PicGo Upload Failed: ${error.message}\n\nNote: If you are on HTTPS, your browser might block requests to local PicGo (HTTP). Please allow mixed content or run CMS locally.`);
-                return null;
+            if (!response.ok) {
+              throw new Error(
+                `PicGo Server Error: ${response.status} ${response.statusText}`,
+              );
             }
+
+            const text = await response.text();
+            console.log("PicGo Raw Response:", text);
+
+            let data;
+            try {
+              data = JSON.parse(text);
+            } catch (e) {
+              throw new Error(
+                `Invalid JSON response: ${text.substring(0, 50)}...`,
+              );
+            }
+
+            if (data.success && data.result && data.result.length > 0) {
+              return data.result[0]; // Returns the URL
+            } else if (
+              data.result &&
+              Array.isArray(data.result) &&
+              data.result.length > 0
+            ) {
+              // Fallback: Check result array directly
+              return data.result[0];
+            } else {
+              console.error("PicGo Unexpected Data:", data);
+              const msg = data.message || JSON.stringify(data);
+              throw new Error(`PicGo Error: ${msg}`);
+            }
+          } catch (error) {
+            console.error("PicGo Upload Failed:", error);
+            alert(
+              `PicGo Upload Failed: ${error.message}\n\nNote: If you are on HTTPS, your browser might block requests to local PicGo (HTTP). Please allow mixed content or run CMS locally.`,
+            );
+            return null;
+          }
         }
 
         function insertText(text) {
-            const activeEl = document.activeElement;
-            if (!activeEl) return;
+          const activeEl = document.activeElement;
+          if (!activeEl) return;
 
-            if (activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'INPUT') {
-                const start = activeEl.selectionStart;
-                const end = activeEl.selectionEnd;
-                const val = activeEl.value;
-                activeEl.value = val.slice(0, start) + text + val.slice(end);
-                activeEl.selectionStart = activeEl.selectionEnd = start + text.length;
-                activeEl.dispatchEvent(new Event('input', { bubbles: true }));
-            } else if (activeEl.isContentEditable) {
-                // For ContentEditable (like CodeMirror in some modes)
-                document.execCommand('insertText', false, text);
-            }
+          if (activeEl.tagName === "TEXTAREA" || activeEl.tagName === "INPUT") {
+            const start = activeEl.selectionStart;
+            const end = activeEl.selectionEnd;
+            const val = activeEl.value;
+            activeEl.value = val.slice(0, start) + text + val.slice(end);
+            activeEl.selectionStart = activeEl.selectionEnd =
+              start + text.length;
+            activeEl.dispatchEvent(new Event("input", { bubbles: true }));
+          } else if (activeEl.isContentEditable) {
+            // For ContentEditable (like CodeMirror in some modes)
+            document.execCommand("insertText", false, text);
+          }
         }
 
         function replaceText(oldText, newText) {
-             const activeEl = document.activeElement;
-             if (!activeEl) return;
-             
-             if (activeEl.tagName === 'TEXTAREA') {
-                 activeEl.value = activeEl.value.replace(oldText, newText);
-                 activeEl.dispatchEvent(new Event('input', { bubbles: true }));
-             } else if (activeEl.isContentEditable) {
-                 // Simple replacement for contentEditable is hard without destroying selection
-                 // We'll try to delete and insert
-                 // This is a basic fallback
-                 if (document.body.innerHTML.includes(oldText)) {
-                    // This is risky, but effective for simple cases
-                    // Better to rely on user undoing if it fails
-                 }
-             }
+          const activeEl = document.activeElement;
+          if (!activeEl) return;
+
+          if (activeEl.tagName === "TEXTAREA") {
+            activeEl.value = activeEl.value.replace(oldText, newText);
+            activeEl.dispatchEvent(new Event("input", { bubbles: true }));
+          } else if (activeEl.isContentEditable) {
+            // Simple replacement for contentEditable is hard without destroying selection
+            // We'll try to delete and insert
+            // This is a basic fallback
+            if (document.body.innerHTML.includes(oldText)) {
+              // This is risky, but effective for simple cases
+              // Better to rely on user undoing if it fails
+            }
+          }
         }
 
-        document.addEventListener('paste', async (e) => {
+        document.addEventListener(
+          "paste",
+          async (e) => {
             const items = e.clipboardData && e.clipboardData.items;
             if (!items) return;
 
             let imageFile = null;
             for (let i = 0; i < items.length; i++) {
-                if (items[i].type.indexOf('image') !== -1) {
-                    imageFile = items[i].getAsFile();
-                    break;
-                }
+              if (items[i].type.indexOf("image") !== -1) {
+                imageFile = items[i].getAsFile();
+                break;
+              }
             }
 
             if (imageFile) {
-                // Find active editor
-                const activeElement = document.activeElement;
-                const isEditor = activeElement && (
-                    activeElement.tagName === 'TEXTAREA' || 
-                    activeElement.contentEditable === 'true' || 
-                    activeElement.closest('.cm-editor')
-                );
+              // Find active editor
+              const activeElement = document.activeElement;
+              const isEditor =
+                activeElement &&
+                (activeElement.tagName === "TEXTAREA" ||
+                  activeElement.contentEditable === "true" ||
+                  activeElement.closest(".cm-editor"));
 
-                if (isEditor) {
-                    e.preventDefault();
-                    
-                    const placeholder = `![Uploading ${imageFile.name}...]`;
-                    insertText(placeholder);
-                    
-                    const result = await uploadToPicGo(imageFile);
-                    
-                    if (result) {
-                        // Success: The user sees the placeholder. We need to replace it.
-                        // Since we can't easily find the exact range again without complex logic,
-                        // we'll instruct the user or try a simple replace on the value if it's textarea.
-                        if (activeElement.tagName === 'TEXTAREA') {
-                             activeElement.value = activeElement.value.replace(placeholder, `![](${result})`);
-                             activeElement.dispatchEvent(new Event('input', { bubbles: true }));
-                        } else {
-                            // For ContentEditable, we might just append the real image or alert the user
-                            // Trying execCommand 'selectAll' then insert is bad.
-                            // We will simply insert the result AFTER the placeholder (user can delete placeholder)
-                            // OR, better:
-                            // We used insertText above. The cursor is AFTER the placeholder.
-                            // We can select the previous N chars and replace.
-                            // This is getting complex.
-                            // Simple approach: Just insert the result.
-                            insertText(`\n![](${result})`);
-                        }
-                    } else {
-                        insertText(`\n<!-- Upload Failed -->`);
-                    }
+              if (isEditor) {
+                e.preventDefault();
+
+                const placeholder = `![Uploading ${imageFile.name}...]`;
+                insertText(placeholder);
+
+                const result = await uploadToPicGo(imageFile);
+
+                if (result) {
+                  // Success: The user sees the placeholder. We need to replace it.
+                  // Since we can't easily find the exact range again without complex logic,
+                  // we'll instruct the user or try a simple replace on the value if it's textarea.
+                  if (activeElement.tagName === "TEXTAREA") {
+                    activeElement.value = activeElement.value.replace(
+                      placeholder,
+                      `![](${result})`,
+                    );
+                    activeElement.dispatchEvent(
+                      new Event("input", { bubbles: true }),
+                    );
+                  } else {
+                    // For ContentEditable, we might just append the real image or alert the user
+                    // Trying execCommand 'selectAll' then insert is bad.
+                    // We will simply insert the result AFTER the placeholder (user can delete placeholder)
+                    // OR, better:
+                    // We used insertText above. The cursor is AFTER the placeholder.
+                    // We can select the previous N chars and replace.
+                    // This is getting complex.
+                    // Simple approach: Just insert the result.
+                    insertText(`\n![](${result})`);
+                  }
+                } else {
+                  insertText(`\n<!-- Upload Failed -->`);
                 }
+              }
             }
-        }, true); // Capture phase
-
-    })();
-  </script>
-</body>
+          },
+          true,
+        ); // Capture phase
+      })();
+    </script>
+  </body>
 </html>

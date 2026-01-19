@@ -21,7 +21,7 @@ package-lock.json
 !.vscode/settings.json
 !.vscode/extensions.json
 !.vscode/tasks.json
-
+.trae/
 # Misc
 _sass/vendors
 assets/js/dist
@@ -35,4 +35,3 @@ md-image-uploader/
 
 # 绘图的
 *.drawio
-
