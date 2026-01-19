@@ -129,72 +129,120 @@
         const PICGO_API = "http://127.0.0.1:36677/upload";
 
         // --- Layout Customization ---
+        let isApplyingLayout = false; // 防止递归
+
         function applyCustomLayout() {
+          // 防止递归调用
+          if (isApplyingLayout) return;
+
           // 查找正文字段 (data-key-path="body")
           const bodyField = document.querySelector(
             'section.field[data-key-path="body"]',
           );
-          if (!bodyField) return;
+          if (!bodyField) return false;
 
-          // 获取父容器 (.content.svelte-1vy4qxn)
+          // 获取父容器 - 必须是原始的 .content 容器，不能是我们创建的列
           const container = bodyField.parentElement;
-          if (!container || container.classList.contains("split-editor-layout"))
-            return;
+          if (!container) return false;
 
-          // 获取所有字段
-          const allFields = container.querySelectorAll("section.field[data-key-path]");
-          if (allFields.length === 0) return;
+          // 如果父容器已经是我们的列容器，说明布局已应用
+          if (
+            container.classList.contains("body-column") ||
+            container.classList.contains("metadata-column") ||
+            container.classList.contains("split-editor-layout")
+          ) {
+            return false;
+          }
 
-          // 创建左侧元数据列
-          const metadataColumn = document.createElement("div");
-          metadataColumn.className = "metadata-column";
+          // 确保是正确的容器 (包含 .content 类)
+          if (!container.classList.contains("content")) return false;
 
-          // 创建右侧正文列
-          const bodyColumn = document.createElement("div");
-          bodyColumn.className = "body-column";
+          isApplyingLayout = true;
 
-          // 分类字段
-          allFields.forEach((field) => {
-            const keyPath = field.getAttribute("data-key-path");
-            if (keyPath === "body") {
-              bodyColumn.appendChild(field);
-            } else {
-              metadataColumn.appendChild(field);
+          try {
+            // 获取所有直接子字段
+            const allFields = Array.from(
+              container.querySelectorAll(":scope > section.field[data-key-path]"),
+            );
+            if (allFields.length === 0) {
+              isApplyingLayout = false;
+              return false;
             }
-          });
 
-          // 清空原容器并添加新结构
-          container.innerHTML = "";
-          container.appendChild(metadataColumn);
-          container.appendChild(bodyColumn);
+            // 创建左侧元数据列
+            const metadataColumn = document.createElement("div");
+            metadataColumn.className = "metadata-column";
 
-          // 应用布局 class
-          container.classList.add("split-editor-layout");
+            // 创建右侧正文列
+            const bodyColumn = document.createElement("div");
+            bodyColumn.className = "body-column";
 
-          console.log("Sveltia CMS: Split editor layout applied.");
+            // 分类字段到对应列
+            allFields.forEach((field) => {
+              const keyPath = field.getAttribute("data-key-path");
+              if (keyPath === "body") {
+                bodyColumn.appendChild(field);
+              } else {
+                metadataColumn.appendChild(field);
+              }
+            });
+
+            // 添加新结构（不使用 innerHTML = "" 避免触发额外的 mutation）
+            container.appendChild(metadataColumn);
+            container.appendChild(bodyColumn);
+
+            // 应用布局 class
+            container.classList.add("split-editor-layout");
+
+            console.log("Sveltia CMS: Split editor layout applied.");
+            return true;
+          } finally {
+            isApplyingLayout = false;
+          }
         }
 
         // Observer to apply layout when DOM changes
         let layoutApplied = false;
+        let pendingTimeout = null;
+
         const observer = new MutationObserver((mutations) => {
-          // 检查是否已存在正文字段且未应用布局
+          // 如果正在应用布局，忽略
+          if (isApplyingLayout) return;
+
+          // 检查是否存在未处理的正文字段
           const bodyField = document.querySelector(
             'section.field[data-key-path="body"]',
           );
+
           if (bodyField && !layoutApplied) {
             const container = bodyField.parentElement;
-            if (container && !container.classList.contains("split-editor-layout")) {
+            // 检查是否是原始容器（未被处理过）
+            if (
+              container &&
+              container.classList.contains("content") &&
+              !container.classList.contains("split-editor-layout")
+            ) {
+              // 防抖：取消之前的定时器
+              if (pendingTimeout) {
+                clearTimeout(pendingTimeout);
+              }
               // 延迟执行确保 DOM 完全加载
-              setTimeout(() => {
-                applyCustomLayout();
-                layoutApplied = true;
-              }, 100);
+              pendingTimeout = setTimeout(() => {
+                if (applyCustomLayout()) {
+                  layoutApplied = true;
+                }
+                pendingTimeout = null;
+              }, 150);
             }
           }
 
           // 页面导航时重置标志
           if (!bodyField) {
             layoutApplied = false;
+            if (pendingTimeout) {
+              clearTimeout(pendingTimeout);
+              pendingTimeout = null;
+            }
           }
         });
 
