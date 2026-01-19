@@ -1,0 +1,63 @@
+backend:
+  name: github
+  repo: zcyisiee/zcyisiee.github.io
+  branch: main
+  base_url: https://zcyisiee-oauth.vercel.app
+
+media_folder: "assets/img/posts"
+public_folder: "/assets/img/posts"
+
+locale: "zh_Hans"
+
+collections:
+  - name: "suibi"
+    label: "随笔"
+    folder: "_posts/随笔"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "分类", name: "categories", widget: "list", default: ["随笔"]}
+      - {label: "标签", name: "tags", widget: "list"}
+      - {label: "描述", name: "description", widget: "string", required: false}
+      - {label: "正文", name: "body", widget: "markdown"}
+
+  - name: "jishu"
+    label: "技术"
+    folder: "_posts/技术"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "分类", name: "categories", widget: "list", default: ["技术"]}
+      - {label: "标签", name: "tags", widget: "list"}
+      - {label: "描述", name: "description", widget: "string", required: false}
+      - {label: "正文", name: "body", widget: "markdown"}
+
+  - name: "wuli"
+    label: "物理"
+    folder: "_posts/物理"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "分类", name: "categories", widget: "list", default: ["物理"]}
+      - {label: "标签", name: "tags", widget: "list"}
+      - {label: "描述", name: "description", widget: "string", required: false}
+      - {label: "正文", name: "body", widget: "markdown"}
+
+  - name: "biancheng"
+    label: "编程"
+    folder: "_posts/编程"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "分类", name: "categories", widget: "list", default: ["编程"]}
+      - {label: "标签", name: "tags", widget: "list"}
+      - {label: "描述", name: "description", widget: "string", required: false}
+      - {label: "正文", name: "body", widget: "markdown"}
