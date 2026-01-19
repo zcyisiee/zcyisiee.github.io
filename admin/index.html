@@ -73,16 +73,39 @@
       }
 
       /* 正文编辑器内部填满 */
-      .split-editor-layout .body-column > section.field > .field-wrapper,
-      .split-editor-layout .body-column > section.field .cm-editor {
+      .split-editor-layout .body-column > section.field > .field-wrapper {
         flex: 1 !important;
         min-height: 0 !important;
         height: 100% !important;
+        overflow: hidden !important;
       }
 
-      /* CodeMirror 编辑器高度 */
+      /* 编辑器容器 - 支持 Lexical 和 CodeMirror */
+      .split-editor-layout .body-column .wrapper.svelte-duifo7,
+      .split-editor-layout .body-column .sui.text-editor,
+      .split-editor-layout .body-column .wrapper.svelte-1p01mhr {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+      }
+
+      /* Lexical 编辑器滚动 */
+      .split-editor-layout .body-column .lexical-root {
+        flex: 1 !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        min-height: 0 !important;
+        max-height: calc(100vh - 280px) !important;
+        padding: 16px !important;
+      }
+
+      /* CodeMirror 编辑器 (备用) */
       .split-editor-layout .body-column .cm-editor {
-        height: calc(100vh - 200px) !important;
+        flex: 1 !important;
+        min-height: 0 !important;
+        height: 100% !important;
       }
 
       .split-editor-layout .body-column .cm-scroller {
