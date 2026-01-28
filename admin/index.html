@@ -150,9 +150,22 @@
       }
 
       /* Source mode textarea scrolling fix */
-      .split-editor-layout .body-column .sui.text-editor textarea {
+      /* 问题：Sveltia的textarea有auto-resize类，会自动增高而不是滚动 */
+      /* 解决：禁用自动高度，强制固定高度+滚动 */
+      .split-editor-layout .body-column .sui.text-editor textarea,
+      .split-editor-layout .body-column .sui.text-area textarea {
         overflow: auto !important;
         overflow-y: auto !important;
+        height: calc(100vh - 320px) !important;
+        max-height: calc(100vh - 320px) !important;
+        min-height: 300px !important;
+        resize: vertical !important;
+      }
+
+      /* 禁用auto-resize行为 - 父容器也需要固定高度 */
+      .split-editor-layout .body-column .sui.text-area {
+        height: auto !important;
+        max-height: none !important;
       }
 
       /* 隐藏正文字段的标题栏（可选，节省空间） */
