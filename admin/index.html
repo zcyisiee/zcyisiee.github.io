@@ -14,8 +14,8 @@
       /* 目标容器: .content.svelte-1vy4qxn 包含所有 section.field */
       .split-editor-layout {
         display: grid !important;
-        grid-template-columns: minmax(300px, auto) 1fr !important;
-        gap: 20px !important;
+        grid-template-columns: var(--metadata-width, 300px) 8px 1fr !important;
+        gap: 0 !important;
         align-items: start !important;
         padding: 16px !important;
         height: calc(100vh - 120px) !important;
@@ -31,9 +31,42 @@
         overflow-y: auto;
         max-height: 100%;
         padding-right: 8px;
-        resize: horizontal;
         min-width: 300px;
         max-width: 600px;
+      }
+
+      /* 拖拽分隔条 */
+      .split-editor-layout .resize-handle {
+        width: 8px;
+        cursor: col-resize;
+        background: transparent;
+        position: relative;
+        flex-shrink: 0;
+        margin: 0 -4px;
+        z-index: 10;
+      }
+
+      .split-editor-layout .resize-handle:hover,
+      .split-editor-layout .resize-handle.dragging {
+        background: var(--sui-primary-accent-color, #3b82f6);
+        opacity: 0.5;
+      }
+
+      .split-editor-layout .resize-handle::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 4px;
+        height: 40px;
+        background: var(--sui-secondary-border-color, #e5e7eb);
+        border-radius: 2px;
+      }
+
+      .split-editor-layout .resize-handle:hover::before,
+      .split-editor-layout .resize-handle.dragging::before {
+        background: var(--sui-primary-accent-color, #3b82f6);
       }
 
       /* 左侧字段样式 - 紧凑 */
@@ -141,6 +174,10 @@
           max-height: none;
         }
 
+        .split-editor-layout .resize-handle {
+          display: none;
+        }
+
         .split-editor-layout .body-column .cm-editor {
           height: 60vh !important;
         }
@@ -222,43 +259,71 @@
 
             // 添加新结构（不使用 innerHTML = "" 避免触发额外的 mutation）
             container.appendChild(metadataColumn);
+
+            // 创建拖拽分隔条
+            const resizeHandle = document.createElement("div");
+            resizeHandle.className = "resize-handle";
+            container.appendChild(resizeHandle);
+
             container.appendChild(bodyColumn);
 
             // 应用布局 class
             container.classList.add("split-editor-layout");
 
             // Restore saved width (with validation)
+            let currentWidth = 300;
             try {
               const savedWidth = localStorage.getItem('sveltia-cms-metadata-width');
               if (savedWidth) {
                 const widthValue = parseInt(savedWidth, 10);
                 // Validate: must be a number between min (300) and max (600)
                 if (!isNaN(widthValue) && widthValue >= 300 && widthValue <= 600) {
-                  metadataColumn.style.width = savedWidth;
+                  currentWidth = widthValue;
+                  container.style.setProperty('--metadata-width', savedWidth);
                 }
               }
             } catch (e) {
               console.warn('Failed to restore column width:', e);
             }
 
-            // Add resize observer to save width changes (only if not already observing)
-            if (!metadataColumn.dataset.resizeObserved) {
-              metadataColumn.dataset.resizeObserved = 'true';
-              const resizeObserver = new ResizeObserver((entries) => {
-                for (const entry of entries) {
-                  const width = Math.round(entry.contentRect.width);
-                  // Only save if within valid range
-                  if (width >= 300 && width <= 600) {
-                    try {
-                      localStorage.setItem('sveltia-cms-metadata-width', width + 'px');
-                    } catch (e) {
-                      console.warn('Failed to save column width:', e);
-                    }
-                  }
-                }
-              });
-              resizeObserver.observe(metadataColumn);
-            }
+            // 拖拽逻辑
+            let isDragging = false;
+            let startX = 0;
+            let startWidth = 0;
+
+            resizeHandle.addEventListener('mousedown', (e) => {
+              isDragging = true;
+              startX = e.clientX;
+              startWidth = metadataColumn.getBoundingClientRect().width;
+              resizeHandle.classList.add('dragging');
+              document.body.style.cursor = 'col-resize';
+              document.body.style.userSelect = 'none';
+              e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+              if (!isDragging) return;
+              const diff = e.clientX - startX;
+              let newWidth = startWidth + diff;
+              // Clamp to min/max
+              newWidth = Math.max(300, Math.min(600, newWidth));
+              container.style.setProperty('--metadata-width', newWidth + 'px');
+              currentWidth = newWidth;
+            });
+
+            document.addEventListener('mouseup', () => {
+              if (!isDragging) return;
+              isDragging = false;
+              resizeHandle.classList.remove('dragging');
+              document.body.style.cursor = '';
+              document.body.style.userSelect = '';
+              // Save to localStorage
+              try {
+                localStorage.setItem('sveltia-cms-metadata-width', currentWidth + 'px');
+              } catch (e) {
+                console.warn('Failed to save column width:', e);
+              }
+            });
 
             console.log("Sveltia CMS: Split editor layout applied.");
             return true;
