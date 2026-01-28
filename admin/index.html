@@ -205,24 +205,61 @@
        * Sveltia CMS Customization Script
        * 1. Layout: 左侧元数据 + 右侧正文编辑器
        * 2. Integration: PicGo Auto-Upload on Paste
+       *
+       * Performance Optimizations:
+       * - throttle函数限制高频操作执行频率
+       * - cachedBodyField缓存DOM查询结果
+       * - 拖拽监听器动态添加/移除（只在拖拽时监听mousemove）
+       * - requestAnimationFrame优化渲染更新
+       * - DocumentFragment减少DOM reflow
+       * - MutationObserver回调节流
        */
 
       (function () {
         // --- Configuration ---
         const PICGO_API = "http://127.0.0.1:36677/upload";
 
+        // --- Performance Utilities ---
+        // 节流函数：限制函数执行频率
+        function throttle(fn, delay) {
+          let lastCall = 0;
+          let timeoutId = null;
+          return function(...args) {
+            const now = Date.now();
+            const remaining = delay - (now - lastCall);
+            if (remaining <= 0) {
+              if (timeoutId) {
+                clearTimeout(timeoutId);
+                timeoutId = null;
+              }
+              lastCall = now;
+              fn.apply(this, args);
+            } else if (!timeoutId) {
+              timeoutId = setTimeout(() => {
+                lastCall = Date.now();
+                timeoutId = null;
+                fn.apply(this, args);
+              }, remaining);
+            }
+          };
+        }
+
         // --- Layout Customization ---
         let isApplyingLayout = false; // 防止递归
+        let cachedBodyField = null; // 缓存DOM查询
 
         function applyCustomLayout() {
           // 防止递归调用
           if (isApplyingLayout) return;
 
-          // 查找正文字段 (data-key-path="body")
-          const bodyField = document.querySelector(
+          // 查找正文字段 (data-key-path="body") - 使用缓存
+          const bodyField = cachedBodyField || document.querySelector(
             'section.field[data-key-path="body"]',
           );
-          if (!bodyField) return false;
+          if (!bodyField) {
+            cachedBodyField = null;
+            return false;
+          }
 
           // 获取父容器 - 必须是原始的 .content 容器，不能是我们创建的列
           const container = bodyField.parentElement;
@@ -260,15 +297,21 @@
             const bodyColumn = document.createElement("div");
             bodyColumn.className = "body-column";
 
-            // 分类字段到对应列
+            // 使用DocumentFragment减少reflow
+            const metaFragment = document.createDocumentFragment();
+            const bodyFragment = document.createDocumentFragment();
+
             allFields.forEach((field) => {
               const keyPath = field.getAttribute("data-key-path");
               if (keyPath === "body") {
-                bodyColumn.appendChild(field);
+                bodyFragment.appendChild(field);
               } else {
-                metadataColumn.appendChild(field);
+                metaFragment.appendChild(field);
               }
             });
+
+            metadataColumn.appendChild(metaFragment);
+            bodyColumn.appendChild(bodyFragment);
 
             // 添加新结构（不使用 innerHTML = "" 避免触发额外的 mutation）
             container.appendChild(metadataColumn);
@@ -299,10 +342,55 @@
               console.warn('Failed to restore column width:', e);
             }
 
-            // 拖拽逻辑
+            // 拖拽逻辑 - 优化：只在拖拽时添加document监听器
             let isDragging = false;
             let startX = 0;
             let startWidth = 0;
+            let rafId = null; // 用于requestAnimationFrame
+
+            // 使用RAF节流的mousemove处理
+            function handleMouseMove(e) {
+              if (!isDragging) return;
+
+              // 使用requestAnimationFrame确保只在渲染帧时更新
+              if (rafId) return;
+
+              rafId = requestAnimationFrame(() => {
+                const diff = e.clientX - startX;
+                let newWidth = startWidth + diff;
+                // Clamp to min/max
+                newWidth = Math.max(300, Math.min(600, newWidth));
+                container.style.setProperty('--metadata-width', newWidth + 'px');
+                currentWidth = newWidth;
+                rafId = null;
+              });
+            }
+
+            function handleMouseUp() {
+              if (!isDragging) return;
+              isDragging = false;
+
+              // 取消pending的RAF
+              if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+              }
+
+              resizeHandle.classList.remove('dragging');
+              document.body.style.cursor = '';
+              document.body.style.userSelect = '';
+
+              // 移除document级别监听器 - 关键性能优化
+              document.removeEventListener('mousemove', handleMouseMove);
+              document.removeEventListener('mouseup', handleMouseUp);
+
+              // Save to localStorage
+              try {
+                localStorage.setItem('sveltia-cms-metadata-width', currentWidth + 'px');
+              } catch (e) {
+                console.warn('Failed to save column width:', e);
+              }
+            }
 
             resizeHandle.addEventListener('mousedown', (e) => {
               isDragging = true;
@@ -312,30 +400,10 @@
               document.body.style.cursor = 'col-resize';
               document.body.style.userSelect = 'none';
               e.preventDefault();
-            });
 
-            document.addEventListener('mousemove', (e) => {
-              if (!isDragging) return;
-              const diff = e.clientX - startX;
-              let newWidth = startWidth + diff;
-              // Clamp to min/max
-              newWidth = Math.max(300, Math.min(600, newWidth));
-              container.style.setProperty('--metadata-width', newWidth + 'px');
-              currentWidth = newWidth;
-            });
-
-            document.addEventListener('mouseup', () => {
-              if (!isDragging) return;
-              isDragging = false;
-              resizeHandle.classList.remove('dragging');
-              document.body.style.cursor = '';
-              document.body.style.userSelect = '';
-              // Save to localStorage
-              try {
-                localStorage.setItem('sveltia-cms-metadata-width', currentWidth + 'px');
-              } catch (e) {
-                console.warn('Failed to save column width:', e);
-              }
+              // 只在拖拽开始时添加document监听器
+              document.addEventListener('mousemove', handleMouseMove, { passive: true });
+              document.addEventListener('mouseup', handleMouseUp);
             });
 
             console.log("Sveltia CMS: Split editor layout applied.");
@@ -348,18 +416,20 @@
         // Observer to apply layout when DOM changes
         let layoutApplied = false;
         let pendingTimeout = null;
+        let observerPaused = false;
 
-        const observer = new MutationObserver((mutations) => {
-          // 如果正在应用布局，忽略
-          if (isApplyingLayout) return;
+        // 节流的mutation处理函数
+        const handleMutations = throttle(() => {
+          // 如果正在应用布局或observer暂停，忽略
+          if (isApplyingLayout || observerPaused) return;
 
-          // 检查是否存在未处理的正文字段
-          const bodyField = document.querySelector(
+          // 检查是否存在未处理的正文字段 - 使用缓存
+          cachedBodyField = document.querySelector(
             'section.field[data-key-path="body"]',
           );
 
-          if (bodyField && !layoutApplied) {
-            const container = bodyField.parentElement;
+          if (cachedBodyField && !layoutApplied) {
+            const container = cachedBodyField.parentElement;
             // 检查是否是原始容器（未被处理过）
             if (
               container &&
@@ -374,21 +444,26 @@
               pendingTimeout = setTimeout(() => {
                 if (applyCustomLayout()) {
                   layoutApplied = true;
+                  // 布局应用后暂停observer一段时间，避免不必要的检查
+                  observerPaused = true;
+                  setTimeout(() => { observerPaused = false; }, 500);
                 }
                 pendingTimeout = null;
-              }, 150);
+              }, 100); // 减少延迟时间
             }
           }
 
           // 页面导航时重置标志
-          if (!bodyField) {
+          if (!cachedBodyField) {
             layoutApplied = false;
             if (pendingTimeout) {
               clearTimeout(pendingTimeout);
               pendingTimeout = null;
             }
           }
-        });
+        }, 100); // 节流：最多每100ms执行一次
+
+        const observer = new MutationObserver(handleMutations);
 
         // Start observing
         observer.observe(document.body, { childList: true, subtree: true });
