@@ -14,7 +14,7 @@
       /* 目标容器: .content.svelte-1vy4qxn 包含所有 section.field */
       .split-editor-layout {
         display: grid !important;
-        grid-template-columns: 300px 1fr !important;
+        grid-template-columns: minmax(300px, auto) 1fr !important;
         gap: 20px !important;
         align-items: start !important;
         padding: 16px !important;
@@ -27,9 +27,13 @@
         display: flex;
         flex-direction: column;
         gap: 12px;
+        overflow: auto;
         overflow-y: auto;
         max-height: 100%;
         padding-right: 8px;
+        resize: horizontal;
+        min-width: 300px;
+        max-width: 600px;
       }
 
       /* 左侧字段样式 - 紧凑 */
@@ -110,6 +114,12 @@
 
       .split-editor-layout .body-column .cm-scroller {
         overflow: auto !important;
+      }
+
+      /* Source mode textarea scrolling fix */
+      .split-editor-layout .body-column .sui.text-editor textarea {
+        overflow: auto !important;
+        overflow-y: auto !important;
       }
 
       /* 隐藏正文字段的标题栏（可选，节省空间） */
@@ -216,6 +226,39 @@
 
             // 应用布局 class
             container.classList.add("split-editor-layout");
+
+            // Restore saved width (with validation)
+            try {
+              const savedWidth = localStorage.getItem('sveltia-cms-metadata-width');
+              if (savedWidth) {
+                const widthValue = parseInt(savedWidth, 10);
+                // Validate: must be a number between min (300) and max (600)
+                if (!isNaN(widthValue) && widthValue >= 300 && widthValue <= 600) {
+                  metadataColumn.style.width = savedWidth;
+                }
+              }
+            } catch (e) {
+              console.warn('Failed to restore column width:', e);
+            }
+
+            // Add resize observer to save width changes (only if not already observing)
+            if (!metadataColumn.dataset.resizeObserved) {
+              metadataColumn.dataset.resizeObserved = 'true';
+              const resizeObserver = new ResizeObserver((entries) => {
+                for (const entry of entries) {
+                  const width = Math.round(entry.contentRect.width);
+                  // Only save if within valid range
+                  if (width >= 300 && width <= 600) {
+                    try {
+                      localStorage.setItem('sveltia-cms-metadata-width', width + 'px');
+                    } catch (e) {
+                      console.warn('Failed to save column width:', e);
+                    }
+                  }
+                }
+              });
+              resizeObserver.observe(metadataColumn);
+            }
 
             console.log("Sveltia CMS: Split editor layout applied.");
             return true;
