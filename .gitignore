@@ -37,3 +37,6 @@ md-image-uploader/
 
 # 绘图的
 *.drawio
+
+# vibe coding
+.sisyphus/*

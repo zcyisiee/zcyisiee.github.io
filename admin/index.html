@@ -109,6 +109,13 @@
         overflow: hidden;
       }
 
+      /* 覆盖 Sveltia 默认字段内 max-width: 768px + auto 居中 */
+      .split-editor-layout .body-column > section.field > * {
+        width: 100% !important;
+        max-width: none !important;
+        margin-inline: 0 !important;
+      }
+
       /* 正文编辑器内部填满 */
       .split-editor-layout .body-column > section.field > .field-wrapper {
         flex: 1 !important;
@@ -126,6 +133,19 @@
         flex-direction: column !important;
         min-height: 0 !important;
         overflow: hidden !important;
+        width: 100% !important;
+        max-width: none !important;
+      }
+
+      .split-editor-layout .body-column .text-editor,
+      .split-editor-layout .body-column .sui.text-area {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+      }
+
+      .split-editor-layout .body-column .sui.text-area {
+        display: grid !important;
       }
 
       /* Lexical 编辑器滚动 */
@@ -136,6 +156,11 @@
         min-height: 0 !important;
         max-height: calc(100vh - 280px) !important;
         padding: 16px !important;
+        width: 100% !important;
+        max-width: none !important;
+        white-space: pre-wrap !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
       }
 
       /* CodeMirror 编辑器 (备用) */
@@ -143,10 +168,18 @@
         flex: 1 !important;
         min-height: 0 !important;
         height: 100% !important;
+        width: 100% !important;
       }
 
       .split-editor-layout .body-column .cm-scroller {
         overflow: auto !important;
+      }
+
+      .split-editor-layout .body-column .cm-content,
+      .split-editor-layout .body-column .cm-line {
+        white-space: pre-wrap !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
       }
 
       /* Source mode textarea scrolling fix */
@@ -160,6 +193,11 @@
         max-height: calc(100vh - 320px) !important;
         min-height: 300px !important;
         resize: vertical !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+        white-space: pre-wrap !important;
+        overflow-wrap: anywhere !important;
       }
 
       /* 禁用auto-resize行为 - 父容器也需要固定高度 */
@@ -247,6 +285,110 @@
         // --- Layout Customization ---
         let isApplyingLayout = false; // 防止递归
         let cachedBodyField = null; // 缓存DOM查询
+        let isModeSwitching = false;
+        let modeSwitchTimer = null;
+        let markdownSnapshot = null;
+        let modeSwitchCheckAttempts = 0;
+        let sourceTextareaWasHidden = false;
+
+        const MODE_SWITCH_CHECK_INTERVAL = 180;
+        const MODE_SWITCH_MAX_ATTEMPTS = 18;
+
+        function getBodySourceTextarea() {
+          const bodyField = document.querySelector(
+            'section.field[data-key-path="body"]',
+          );
+          if (!bodyField) return null;
+          return bodyField.querySelector('textarea');
+        }
+
+        function normalizeEscapedMarkdownStars(text) {
+          if (typeof text !== 'string') return '';
+          return text.replace(/\\\*/g, '*');
+        }
+
+        function clearModeSwitchState(clearSnapshot) {
+          if (modeSwitchTimer) {
+            clearTimeout(modeSwitchTimer);
+            modeSwitchTimer = null;
+          }
+          if (clearSnapshot) markdownSnapshot = null;
+          modeSwitchCheckAttempts = 0;
+          sourceTextareaWasHidden = false;
+          isModeSwitching = false;
+          observerPaused = false;
+        }
+
+        function reconcileMarkdownSnapshot() {
+          const hasSnapshot = typeof markdownSnapshot === 'string';
+          const sourceTextarea = getBodySourceTextarea();
+
+          if (sourceTextarea && hasSnapshot) {
+            if (!sourceTextareaWasHidden) {
+              modeSwitchTimer = setTimeout(
+                reconcileMarkdownSnapshot,
+                MODE_SWITCH_CHECK_INTERVAL,
+              );
+              return;
+            }
+
+            const currentValue = sourceTextarea.value;
+            const snapshotValue = markdownSnapshot;
+            const isEscapeOnlyChange =
+              currentValue !== snapshotValue &&
+              normalizeEscapedMarkdownStars(currentValue) === snapshotValue;
+
+            if (isEscapeOnlyChange) {
+              sourceTextarea.value = snapshotValue;
+              sourceTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+
+            clearModeSwitchState(true);
+            return;
+          }
+
+          modeSwitchCheckAttempts += 1;
+
+          if (!sourceTextarea && hasSnapshot) {
+            sourceTextareaWasHidden = true;
+          }
+
+          const shouldKeepWaiting =
+            hasSnapshot && modeSwitchCheckAttempts < MODE_SWITCH_MAX_ATTEMPTS;
+
+          if (shouldKeepWaiting) {
+            modeSwitchTimer = setTimeout(
+              reconcileMarkdownSnapshot,
+              MODE_SWITCH_CHECK_INTERVAL,
+            );
+            return;
+          }
+
+          clearModeSwitchState(true);
+        }
+
+        function onModeSwitchStart() {
+          isModeSwitching = true;
+          observerPaused = true;
+
+          if (pendingTimeout) {
+            clearTimeout(pendingTimeout);
+            pendingTimeout = null;
+          }
+
+          const sourceTextarea = getBodySourceTextarea();
+          if (sourceTextarea) {
+            markdownSnapshot = sourceTextarea.value;
+            sourceTextareaWasHidden = false;
+          }
+
+          if (modeSwitchTimer) clearTimeout(modeSwitchTimer);
+          modeSwitchCheckAttempts = 0;
+          modeSwitchTimer = setTimeout(
+            reconcileMarkdownSnapshot,
+            MODE_SWITCH_CHECK_INTERVAL,
+          );
+        }
 
         function applyCustomLayout() {
           // 防止递归调用
@@ -418,10 +560,23 @@
         let pendingTimeout = null;
         let observerPaused = false;
 
+        // 捕获 source <-> preview 切换，避免 observer 造成重复重挂载
+        document.addEventListener(
+          'click',
+          (e) => {
+            const toggleBtn = e.target.closest(
+              'button[aria-label*="Markdown"], button[aria-label*="Rich Text"], button[aria-label*="Visual"], button[aria-label*="Preview"], button[aria-label*="源码"], button[aria-label*="预览"]',
+            );
+            if (!toggleBtn) return;
+            onModeSwitchStart();
+          },
+          true,
+        );
+
         // 节流的mutation处理函数
         const handleMutations = throttle(() => {
           // 如果正在应用布局或observer暂停，忽略
-          if (isApplyingLayout || observerPaused) return;
+          if (isApplyingLayout || observerPaused || isModeSwitching) return;
 
           // 检查是否存在未处理的正文字段 - 使用缓存
           cachedBodyField = document.querySelector(
