@@ -1,7 +1,7 @@
 ---
 title: Typora自动上传图片
 date: 2025-04-11
-categories: [技术, Markdown]
+categories: [技术, 排版写作]
 tags: [Markdown, Typora]
 description: 介绍了通过Typora+PicGo的方式自动将图片上传到GitHub上的方法
 pin: true

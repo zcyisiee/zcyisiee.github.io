@@ -1,8 +1,7 @@
 ---
 title: python package开发流程心得
 date: 2026-02-13
-categories:
-  - 技术
+categories: [技术, 来点真的]
 tags:
   - src-layout
 description: 主要使用vibe coding，涵盖了很多踩雷的地方

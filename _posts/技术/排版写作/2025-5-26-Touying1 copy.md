@@ -1,7 +1,7 @@
 ---
 title: Typst-Touying学习笔记 1. Quick Start
 date: 2025-05-26
-categories: [技术, Typst]
+categories: [技术, 排版写作]
 tags: [Typst]
 description: 在先后使用Touying完成系统科学大会、南京大学组会汇报后，我发现Touying真是一个好东西，Typst真是一个好东西。于是需要认真学习一下！
 series: "我的Touying系列学习笔记"
