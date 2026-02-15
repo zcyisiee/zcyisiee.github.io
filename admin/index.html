@@ -233,6 +233,46 @@
           height: 60vh !important;
         }
       }
+
+      /* ============================================
+         Editor Mode Switching - Single Window Mode
+         始终保持单窗口显示，通过按钮切换 Preview/Source
+         ============================================ */
+
+      /* Preview 模式：显示 Lexical 编辑器，隐藏 Source 编辑器 */
+      .editor-mode-preview .sui.text-editor .lexical-root {
+        display: block !important;
+        flex: 1 !important;
+      }
+
+      .editor-mode-preview .sui.text-editor .sui.text-area {
+        display: none !important;
+      }
+
+      /* Source 模式：显示 Source 编辑器，隐藏 Lexical 编辑器 */
+      .editor-mode-source .sui.text-editor .lexical-root {
+        display: none !important;
+      }
+
+      .editor-mode-source .sui.text-editor .sui.text-area {
+        display: flex !important;
+        flex: 1 !important;
+      }
+
+      /* 确保编辑器容器正确布局 */
+      .editor-mode-preview .sui.text-editor,
+      .editor-mode-source .sui.text-editor {
+        flex-direction: column !important;
+      }
+
+      /* 当没有模式类时默认使用 Preview 模式（防止闪烁） */
+      section.field[data-key-path="body"] .sui.text-editor:not(.editor-mode-preview):not(.editor-mode-source) .lexical-root {
+        display: block !important;
+      }
+
+      section.field[data-key-path="body"] .sui.text-editor:not(.editor-mode-preview):not(.editor-mode-source) .sui.text-area {
+        display: none !important;
+      }
     </style>
   </head>
   <body>
@@ -280,6 +320,76 @@
               }, remaining);
             }
           };
+        }
+
+        // --- Editor Mode Management ---
+        // 检测并更新编辑器显示模式
+        function updateEditorMode() {
+          const bodyField = document.querySelector('section.field[data-key-path="body"]');
+          if (!bodyField) return;
+
+          const textEditor = bodyField.querySelector('.sui.text-editor');
+          if (!textEditor) return;
+
+          // 查找 Markdown 切换按钮
+          const markdownBtn = bodyField.querySelector('button[aria-label*="Markdown"], button[aria-label*="Source"], button[aria-label*="源码"]');
+          
+          // 根据按钮状态判断当前模式
+          // aria-pressed="true" 表示 Source 模式（Markdown）
+          // aria-pressed="false" 或不存在 表示 Preview 模式
+          const isSourceMode = markdownBtn && markdownBtn.getAttribute('aria-pressed') === 'true';
+
+          // 移除旧的模式类
+          textEditor.classList.remove('editor-mode-preview', 'editor-mode-source');
+
+          // 添加对应的模式类
+          if (isSourceMode) {
+            textEditor.classList.add('editor-mode-source');
+          } else {
+            textEditor.classList.add('editor-mode-preview');
+          }
+
+          return isSourceMode;
+        }
+
+        // 监听编辑器模式切换
+        function setupEditorModeWatcher() {
+          const bodyField = document.querySelector('section.field[data-key-path="body"]');
+          if (!bodyField) return;
+
+          // 使用 MutationObserver 监听按钮 aria-pressed 属性变化
+          const modeObserver = new MutationObserver((mutations) => {
+            let shouldUpdate = false;
+            mutations.forEach((mutation) => {
+              if (mutation.type === 'attributes' && 
+                  mutation.attributeName === 'aria-pressed' &&
+                  mutation.target.matches('button[aria-label*="Markdown"], button[aria-label*="Source"], button[aria-label*="源码"]')) {
+                shouldUpdate = true;
+              }
+            });
+            if (shouldUpdate) {
+              updateEditorMode();
+            }
+          });
+
+          // 监听按钮点击
+          bodyField.addEventListener('click', (e) => {
+            const markdownBtn = e.target.closest('button[aria-label*="Markdown"], button[aria-label*="Source"], button[aria-label*="源码"]');
+            if (markdownBtn) {
+              // 延迟更新以确保 Sveltia 已经更新了 aria-pressed 状态
+              setTimeout(updateEditorMode, 50);
+            }
+          }, true);
+
+          // 观察 bodyField 内的按钮属性变化
+          modeObserver.observe(bodyField, { 
+            subtree: true, 
+            attributes: true, 
+            attributeFilter: ['aria-pressed'] 
+          });
+
+          // 初始化模式
+          updateEditorMode();
         }
 
         // --- Layout Customization ---
@@ -549,6 +659,10 @@
             });
 
             console.log("Sveltia CMS: Split editor layout applied.");
+            
+            // 设置编辑器模式管理
+            setupEditorModeWatcher();
+            
             return true;
           } finally {
             isApplyingLayout = false;
