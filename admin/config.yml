@@ -64,6 +64,60 @@ collections:
       - {label: "系列名称", name: "series", widget: "string", required: false, default: "我的Chirpy系列教程"}
       - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
 
+  - name: "jishu-gongjushouce"
+    label: "技术/工具手册"
+    folder: "_posts/技术/工具手册"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    editor:
+      preview: false
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "分类", name: "categories", widget: "list", default: ["技术"]}
+      - {label: "标签", name: "tags", widget: "list"}
+      - {label: "描述", name: "description", widget: "string", required: false}
+      - {label: "正文", name: "body", widget: "markdown"}
+      - {label: "系列名称", name: "series", widget: "string", required: false}
+      - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
+
+  - name: "jishu-paibanshuoxie"
+    label: "技术/排版写作"
+    folder: "_posts/技术/排版写作"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    editor:
+      preview: false
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "分类", name: "categories", widget: "list", default: ["技术"]}
+      - {label: "标签", name: "tags", widget: "list"}
+      - {label: "描述", name: "description", widget: "string", required: false}
+      - {label: "正文", name: "body", widget: "markdown"}
+      - {label: "系列名称", name: "series", widget: "string", required: false}
+      - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
+
+  - name: "jishu-laidianzhenede"
+    label: "技术/来点真的"
+    folder: "_posts/技术/来点真的"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    extension: "md"
+    editor:
+      preview: false
+    fields:
+      - {label: "标题", name: "title", widget: "string"}
+      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
+      - {label: "分类", name: "categories", widget: "list", default: ["技术"]}
+      - {label: "标签", name: "tags", widget: "list"}
+      - {label: "描述", name: "description", widget: "string", required: false}
+      - {label: "正文", name: "body", widget: "markdown"}
+      - {label: "系列名称", name: "series", widget: "string", required: false}
+      - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
+
   - name: "wuli"
     label: "物理"
     folder: "_posts/物理"
@@ -112,24 +166,6 @@ collections:
       - {label: "标题", name: "title", widget: "string"}
       - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
       - {label: "分类", name: "categories", widget: "list", default: ["物理"]}
-      - {label: "标签", name: "tags", widget: "list"}
-      - {label: "描述", name: "description", widget: "string", required: false}
-      - {label: "正文", name: "body", widget: "markdown"}
-      - {label: "系列名称", name: "series", widget: "string", required: false}
-      - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
-
-  - name: "biancheng"
-    label: "编程"
-    folder: "_posts/编程"
-    create: true
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
-    extension: "md"
-    editor:
-      preview: false
-    fields:
-      - {label: "标题", name: "title", widget: "string"}
-      - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
-      - {label: "分类", name: "categories", widget: "list", default: ["编程"]}
       - {label: "标签", name: "tags", widget: "list"}
       - {label: "描述", name: "description", widget: "string", required: false}
       - {label: "正文", name: "body", widget: "markdown"}
