@@ -683,6 +683,21 @@
           true,
         );
 
+        // 快捷键: Cmd+Shift+M (Mac) / Ctrl+Shift+M (Win) 切换 Preview/Source
+        document.addEventListener('keydown', (e) => {
+          if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'm') {
+            const bodyField = document.querySelector('section.field[data-key-path="body"]');
+            if (!bodyField) return;
+            const toggleBtn = bodyField.querySelector(
+              'button[aria-label*="Markdown"], button[aria-label*="Source"], button[aria-label*="Rich Text"], button[aria-label*="Visual"], button[aria-label*="Preview"], button[aria-label*="源码"], button[aria-label*="预览"]'
+            );
+            if (toggleBtn) {
+              e.preventDefault();
+              toggleBtn.click();
+            }
+          }
+        });
+
         // 节流的mutation处理函数
         const handleMutations = throttle(() => {
           // 如果正在应用布局或observer暂停，忽略
