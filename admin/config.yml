@@ -17,6 +17,14 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     editor:
       preview: false
+    nested:
+      depth: 100
+      summary: '{{title}}'
+    meta:
+      path:
+        widget: string
+        label: '路径'
+        index_file: 'index'
     fields:
       - {label: "标题", name: "title", widget: "string"}
       - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
@@ -24,6 +32,8 @@ collections:
       - {label: "标签", name: "tags", widget: "list"}
       - {label: "描述", name: "description", widget: "string", required: false}
       - {label: "正文", name: "body", widget: "markdown"}
+      - {label: "系列名称", name: "series", widget: "string", required: false}
+      - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
 
   - name: "jishu"
     label: "技术"
@@ -32,6 +42,14 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     editor:
       preview: false
+    nested:
+      depth: 100
+      summary: '{{title}}'
+    meta:
+      path:
+        widget: string
+        label: '路径'
+        index_file: 'index'
     fields:
       - {label: "标题", name: "title", widget: "string"}
       - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
@@ -39,6 +57,8 @@ collections:
       - {label: "标签", name: "tags", widget: "list"}
       - {label: "描述", name: "description", widget: "string", required: false}
       - {label: "正文", name: "body", widget: "markdown"}
+      - {label: "系列名称", name: "series", widget: "string", required: false}
+      - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
 
   - name: "wuli"
     label: "物理"
@@ -47,6 +67,14 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     editor:
       preview: false
+    nested:
+      depth: 100
+      summary: '{{title}}'
+    meta:
+      path:
+        widget: string
+        label: '路径'
+        index_file: 'index'
     fields:
       - {label: "标题", name: "title", widget: "string"}
       - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
@@ -54,6 +82,8 @@ collections:
       - {label: "标签", name: "tags", widget: "list"}
       - {label: "描述", name: "description", widget: "string", required: false}
       - {label: "正文", name: "body", widget: "markdown"}
+      - {label: "系列名称", name: "series", widget: "string", required: false}
+      - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
 
   - name: "biancheng"
     label: "编程"
@@ -62,6 +92,14 @@ collections:
     slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     editor:
       preview: false
+    nested:
+      depth: 100
+      summary: '{{title}}'
+    meta:
+      path:
+        widget: string
+        label: '路径'
+        index_file: 'index'
     fields:
       - {label: "标题", name: "title", widget: "string"}
       - {label: "发布日期", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false}
@@ -69,3 +107,5 @@ collections:
       - {label: "标签", name: "tags", widget: "list"}
       - {label: "描述", name: "description", widget: "string", required: false}
       - {label: "正文", name: "body", widget: "markdown"}
+      - {label: "系列名称", name: "series", widget: "string", required: false}
+      - {label: "系列顺序", name: "series_order", widget: "number", required: false, value_type: "int"}
