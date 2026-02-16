@@ -345,6 +345,46 @@
             textEditor.classList.add('editor-mode-preview');
           }
 
+          // --- Scroll position restore ---
+          if (savedScrollRatio !== null) {
+            const ratio = savedScrollRatio;
+            savedScrollRatio = null;
+
+            if (ratio > 0) {
+              if (isSourceMode) {
+                // Source mode: textarea is immediately available, restore after one frame
+                pendingScrollRestore = setTimeout(() => {
+                  requestAnimationFrame(() => {
+                    const ta = bodyField.querySelector('textarea');
+                    if (ta && ta.scrollHeight > ta.clientHeight) {
+                      ta.scrollTop = Math.round(ratio * (ta.scrollHeight - ta.clientHeight));
+                    }
+                    pendingScrollRestore = null;
+                  });
+                }, 50);
+              } else {
+                // Preview mode: Lexical DOM rebuilds async, poll until scrollable
+                let attempts = 0;
+                const maxAttempts = 20;
+                const tryRestore = () => {
+                  const lr = bodyField.querySelector('.lexical-root');
+                  if (lr && lr.scrollHeight > lr.clientHeight) {
+                    lr.scrollTop = Math.round(ratio * (lr.scrollHeight - lr.clientHeight));
+                    pendingScrollRestore = null;
+                    return;
+                  }
+                  attempts++;
+                  if (attempts < maxAttempts) {
+                    pendingScrollRestore = setTimeout(tryRestore, 150);
+                  } else {
+                    pendingScrollRestore = null; // timeout — silent failure
+                  }
+                };
+                pendingScrollRestore = setTimeout(tryRestore, 200);
+              }
+            }
+          }
+
           return isSourceMode;
         }
 
@@ -396,6 +436,8 @@
         let markdownSnapshot = null;
         let modeSwitchCheckAttempts = 0;
         let sourceTextareaWasHidden = false;
+        let savedScrollRatio = null;
+        let pendingScrollRestore = null; // setTimeout ID for cancelling incomplete restore polls
 
         const MODE_SWITCH_CHECK_INTERVAL = 180;
         const MODE_SWITCH_MAX_ATTEMPTS = 18;
@@ -476,6 +518,30 @@
         function onModeSwitchStart() {
           isModeSwitching = true;
           observerPaused = true;
+
+          // Cancel any in-flight scroll restore from a previous switch (prevents race on rapid toggling)
+          if (pendingScrollRestore) {
+            clearTimeout(pendingScrollRestore);
+            pendingScrollRestore = null;
+          }
+
+          // Save scroll ratio BEFORE the old editor gets display:none (which resets scrollTop to 0)
+          const bodyFieldForScroll = document.querySelector('section.field[data-key-path="body"]');
+          if (bodyFieldForScroll) {
+            const lexicalRoot = bodyFieldForScroll.querySelector('.lexical-root');
+            const textarea = bodyFieldForScroll.querySelector('textarea');
+            const activEl = (lexicalRoot && lexicalRoot.clientHeight > 0)
+              ? lexicalRoot
+              : (textarea && textarea.clientHeight > 0)
+                ? textarea
+                : null;
+            if (activEl) {
+              const maxScroll = activEl.scrollHeight - activEl.clientHeight;
+              savedScrollRatio = maxScroll > 0 ? activEl.scrollTop / maxScroll : 0;
+            } else {
+              savedScrollRatio = 0;
+            }
+          }
 
           if (pendingTimeout) {
             clearTimeout(pendingTimeout);
